@@ -13,7 +13,7 @@ public class SyncDataTable// : NetworkBehaviour
 
     private SyncDataTable()
     {
-        LoadDataServer();
+        LoadDataServer(Application.streamingAssetsPath + @"\RandomSamples3.csv", "sample", ';');
     }
     private static SyncDataTable instance = null;
     public static SyncDataTable Instance
@@ -27,18 +27,21 @@ public class SyncDataTable// : NetworkBehaviour
             return instance;
         }
     }
-    //public DataTable data { get; private set; } = new DataTable();
-    //[Server]
-    private void LoadDataServer() {
-        //GenericParsing.GenericParserAdapter parser = new GenericParsing.GenericParserAdapter(@"C:\Users\marck\Documents\unity_projekte\NewMRTKMirror\Assets\StreamingAssets\RandomSamples3.csv") {
-        GenericParsing.GenericParserAdapter parser = new GenericParsing.GenericParserAdapter(Application.streamingAssetsPath + @"\RandomSamples3.csv") {
-            ColumnDelimiter = ';',
-            FirstRowHasHeader = true
+    /// <summary>
+    /// loads a simple csv from file all as string the DataDimension need to handle the conversion of data types (in order to extract rows they need the same type)
+    /// </summary>
+    /// <param name="path">csv path</param>
+    /// <param name="tableName">the name for the dict in wich the data is stored</param>
+    /// <param name="delimiter">seperation between cells</param>
+    /// <param name="firstRowHeader">if the first row contains the headers</param>
+    private void LoadDataServer(string path,string tableName, char delimiter, bool firstRowHeader=true) {
+
+        GenericParsing.GenericParserAdapter parser = new GenericParsing.GenericParserAdapter(path)
+        {
+            ColumnDelimiter = delimiter,
+            FirstRowHasHeader = firstRowHeader
         };
-        data["sample"] = parser.GetDataTable();
-        //data = ConvertDataTableTypes(data);
-        DebugLogDataTable(data["sample"]);
-        Debug.Log(data["sample"].Columns["Integers 1"].DataType);
+        data[tableName] = parser.GetDataTable();
     }
     /// <summary>
     /// Basic function to dump some dataTable in Debug.Log
